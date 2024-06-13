@@ -1,1 +1,1 @@
-import «TheoremProvingInLean4».Basic
+import TheoremProvingInLean4.Basic
