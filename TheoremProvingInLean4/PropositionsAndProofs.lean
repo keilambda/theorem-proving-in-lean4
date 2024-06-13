@@ -3,8 +3,8 @@ variable (p q r : Prop)
 -- commutativity of ∧ and ∨
 example : p ∧ q ↔ q ∧ p :=
   Iff.intro
-    (fun h : p ∧ q => And.intro h.right h.left)
-    (fun h : q ∧ p => And.intro h.right h.left)
+    (fun ⟨p, q⟩ => And.intro q p)
+    (fun ⟨q, p⟩ => And.intro p q)
 
 example : p ∨ q ↔ q ∨ p :=
   Iff.intro
@@ -14,8 +14,8 @@ example : p ∨ q ↔ q ∨ p :=
 -- associativity of ∧ and ∨
 example : (p ∧ q) ∧ r ↔ p ∧ (q ∧ r) :=
   Iff.intro
-    (fun h => have hpq := h.left; ⟨hpq.left, hpq.right, h.right⟩)
-    (fun h => have hqr := h.right; ⟨⟨h.left, hqr.left⟩, hqr.right⟩)
+    (fun ⟨⟨p, q⟩, r⟩ => ⟨p, q, r⟩)
+    (fun ⟨p, ⟨q, r⟩⟩ => ⟨⟨p, q⟩, r⟩)
 
 example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
   Iff.intro
@@ -29,27 +29,26 @@ example : (p ∨ q) ∨ r ↔ p ∨ (q ∨ r) :=
 -- distributivity
 example : p ∧ (q ∨ r) ↔ (p ∧ q) ∨ (p ∧ r) :=
   Iff.intro
-    (fun hpqr =>
-      have hqr := hpqr.right
-      Or.elim hqr
-        (fun hq => Or.inl (And.intro hpqr.left hq))
-        (fun hr => Or.inr (And.intro hpqr.left hr)))
+    (fun ⟨p, qr⟩ =>
+      Or.elim qr
+        (fun hq => Or.inl (And.intro p hq))
+        (fun hr => Or.inr (And.intro p hr)))
     (fun hpqpr =>
       Or.elim hpqpr
-        (fun hpq => And.intro hpq.left (Or.inl hpq.right))
-        (fun hpr => And.intro hpr.left (Or.inr hpr.right)))
+        (fun ⟨p, q⟩ => And.intro p (Or.inl q))
+        (fun ⟨p, r⟩ => And.intro p (Or.inr r)))
 
 example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) :=
   Iff.intro
     (fun hpqr =>
       Or.elim hpqr
         (fun hp => And.intro (Or.inl hp) (Or.inl hp))
-        (fun hqr => And.intro (Or.inr hqr.left) (Or.inr hqr.right)))
-    (fun hpqpr =>
-      Or.elim hpqpr.left
+        (fun ⟨q, r⟩ => And.intro (Or.inr q) (Or.inr r)))
+    (fun ⟨pq, pr⟩ =>
+      Or.elim pq
         Or.inl
         (fun hq =>
-          Or.elim hpqpr.right
+          Or.elim pr
             Or.inl
             (fun hr => Or.inr (And.intro hq hr))))
 
