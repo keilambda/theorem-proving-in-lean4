@@ -53,14 +53,41 @@ example : p ∨ (q ∧ r) ↔ (p ∨ q) ∧ (p ∨ r) :=
             (fun hr => Or.inr (And.intro hq hr))))
 
 -- other properties
-example : (p → (q → r)) ↔ (p ∧ q → r) := sorry
-example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) := sorry
-example : ¬(p ∨ q) ↔ ¬p ∧ ¬q := sorry
-example : ¬p ∨ ¬q → ¬(p ∧ q) := sorry
-example : ¬(p ∧ ¬p) := sorry
-example : p ∧ ¬q → ¬(p → q) := sorry
-example : ¬p → (p → q) := sorry
-example : (¬p ∨ q) → (p → q) := sorry
-example : p ∨ False ↔ p := sorry
-example : p ∧ False ↔ False := sorry
-example : (p → q) → (¬q → ¬p) := sorry
+example : (p → (q → r)) ↔ (p ∧ q → r) :=
+  Iff.intro And.elim (fun h hp hq => h ⟨hp, hq⟩)
+
+example : ((p ∨ q) → r) ↔ (p → r) ∧ (q → r) :=
+  Iff.intro
+    (fun h => ⟨fun hp => h (Or.inl hp), fun hq => h (Or.inr hq)⟩)
+    (fun ⟨pr, qr⟩ pq => Or.elim pq pr qr)
+
+example : ¬(p ∨ q) ↔ ¬p ∧ ¬q :=
+  Iff.intro
+    (fun h => ⟨fun hp => h (Or.inl hp), fun hq => h (Or.inr hq)⟩)
+    (fun ⟨np, nq⟩ pq => Or.elim pq np nq)
+
+example : ¬p ∨ ¬q → ¬(p ∧ q) :=
+  fun hpq => Or.elim hpq (fun np ⟨hp, _⟩ => np hp) (fun nq ⟨_, q⟩ => nq q)
+
+example : ¬(p ∧ ¬p) :=
+  fun ⟨hp, hnp⟩ => hnp hp
+
+example : p ∧ ¬q → ¬(p → q) :=
+  fun ⟨hp, nq⟩ npq => nq (npq hp)
+
+example : ¬p → (p → q) :=
+  fun np hp => absurd hp np
+
+example : (¬p ∨ q) → (p → q) :=
+  fun npq hp => Or.elim npq (fun np => absurd hp np) id
+
+example : p ∨ False ↔ p :=
+  Iff.intro
+    (fun hpf => Or.elim hpf id False.elim)
+    Or.inl
+
+example : p ∧ False ↔ False :=
+  Iff.intro And.right False.elim
+
+example : (p → q) → (¬q → ¬p) :=
+  fun pq nq hp => absurd (pq hp) nq
