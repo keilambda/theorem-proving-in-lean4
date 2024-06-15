@@ -60,3 +60,31 @@ example (a : α) : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
   Iff.intro
     (fun ⟨hx, hrp⟩ hr => ⟨hx, hrp hr⟩)
     (fun hrxp => ⟨a, fun hr => have ⟨hx, hp⟩ := hrxp hr; sorry⟩)
+
+example : (∀ x, p x ∧ q x) ↔ (∀ x, p x) ∧ (∀ x, q x) :=
+  Iff.intro
+    (fun hxpq => ⟨fun hx => (hxpq hx).left, fun hx => (hxpq hx).right⟩)
+    (fun ⟨hxp, hxq⟩ hx => ⟨hxp hx, hxq hx⟩)
+
+example : (∀ x, p x → q x) → (∀ x, p x) → (∀ x, q x) :=
+  fun hxpq hxp hx => (hxpq hx) (hxp hx)
+
+example : (∀ x, p x) ∨ (∀ x, q x) → ∀ x, p x ∨ q x :=
+  fun hxpxq hx => Or.elim hxpxq
+    (fun hxp => Or.inl (hxp hx))
+    (fun hxq => Or.inr (hxq hx))
+
+example : α → ((∀ x : α, r) ↔ r) :=
+  fun hx => Iff.intro
+    (fun hxr => hxr hx)
+    (fun hr _ => hr)
+
+example : (∀ x, p x ∨ r) ↔ (∀ x, p x) ∨ r :=
+  Iff.intro
+    (fun hxpr => sorry)
+    (fun hxpr hx => Or.elim hxpr (fun hxp => Or.inl (hxp hx)) Or.inr)
+
+example : (∀ x, r → p x) ↔ (r → ∀ x, p x) :=
+  Iff.intro
+    (fun hxrp hr hx => (hxrp hx) hr)
+    (fun hrxp hx hr => (hrxp hr) hx)
