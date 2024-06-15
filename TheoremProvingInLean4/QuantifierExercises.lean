@@ -51,7 +51,10 @@ example : (∀ x, p x → r) ↔ (∃ x, p x) → r :=
 example (a : α) : (∃ x, p x → r) ↔ (∀ x, p x) → r :=
   Iff.intro
     (fun ⟨hx, hpr⟩ hxp => hpr (hxp hx))
-    (fun hxpr => ⟨a, fun hp => hxpr (fun hx => sorry)⟩)
+    (fun hxpr => byCases
+      (fun hxp => ⟨a, fun _ => hxpr hxp⟩)
+      (fun hnxp => byContradiction
+        (fun hnxpr => hnxp (fun x => byContradiction (fun hnp => hnxpr ⟨x, (fun hp => absurd hp hnp)⟩)))))
 
 example (a : α) : (∃ x, r → p x) ↔ (r → ∃ x, p x) :=
   Iff.intro
