@@ -88,3 +88,14 @@ example : (∀ x, r → p x) ↔ (r → ∀ x, p x) :=
   Iff.intro
     (fun hxrp hr hx => (hxrp hx) hr)
     (fun hrxp hx hr => (hrxp hr) hx)
+
+variable (men : Type) (barber : men)
+variable (shaves : men → men → Prop)
+
+example (h : ∀ man : men, shaves barber man ↔ ¬ shaves man man) : False :=
+  have ⟨hsns, hnss⟩ := h barber
+  have hns := fun hs => hsns hs hs
+  hns (hnss hns)
+
+example (h : ∀ man : men, shaves barber man ↔ ¬ shaves man man) : False :=
+  iff_not_self (h barber)
